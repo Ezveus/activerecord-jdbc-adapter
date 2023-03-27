@@ -88,7 +88,8 @@ module ArJdbc
       end unless redshift?
 
       # Set interval output format to ISO 8601 for ease of parsing by ActiveSupport::Duration.parse
-      execute("SET intervalstyle = iso_8601", "SCHEMA")
+      # execute("SET intervalstyle = iso_8601", "SCHEMA")
+      # database_version >= 90500
 
       # SET statements from :variables config hash
       # http://www.postgresql.org/docs/8.3/static/sql-set.html
