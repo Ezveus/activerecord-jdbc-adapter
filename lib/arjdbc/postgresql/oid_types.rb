@@ -227,11 +227,18 @@ module ArJdbc
       end
 
       def load_types_queries(initializer, oids)
-        query = <<~SQL
+        if supports_ranges?
+          query = <<~SQL
             SELECT t.oid, t.typname, t.typelem, t.typdelim, t.typinput, r.rngsubtype, t.typtype, t.typbasetype
             FROM pg_type as t
             LEFT JOIN pg_range as r ON oid = rngtypid
-        SQL
+          SQL
+        else
+          query = <<~SQL
+            SELECT t.oid, t.typname, t.typelem, t.typdelim, t.typinput, NULL, t.typtype, t.typbasetype
+            FROM pg_type as t
+          SQL
+        end
         if oids
           if oids.all? { |e| e.kind_of? Numeric }
             yield query + "WHERE t.oid IN (%s)" % oids.join(", ")
